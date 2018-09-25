@@ -17,8 +17,8 @@
 
 import {ConvolutionDefinition, mobileNetArchitectures} from './mobilenet';
 
-const GOOGLE_CLOUD_STORAGE_DIR =
-    'https://storage.googleapis.com/tfjs-models/weights/posenet/';
+const RESOURCES_DIR =
+    'resources/';
 
 export type Checkpoint = {
   url: string,
@@ -27,19 +27,19 @@ export type Checkpoint = {
 
 export const checkpoints: {[multiplier: number]: Checkpoint} = {
   1.01: {
-    url: GOOGLE_CLOUD_STORAGE_DIR + 'mobilenet_v1_101/',
+    url: RESOURCES_DIR + 'mobilenet_v1_101/',
     architecture: mobileNetArchitectures[100]
   },
   1.0: {
-    url: GOOGLE_CLOUD_STORAGE_DIR + 'mobilenet_v1_100/',
+    url: RESOURCES_DIR + 'mobilenet_v1_100/',
     architecture: mobileNetArchitectures[100]
   },
   0.75: {
-    url: GOOGLE_CLOUD_STORAGE_DIR + 'mobilenet_v1_075/',
+    url: RESOURCES_DIR + 'mobilenet_v1_075/',
     architecture: mobileNetArchitectures[75]
   },
   0.5: {
-    url: GOOGLE_CLOUD_STORAGE_DIR + 'mobilenet_v1_050/',
+    url: RESOURCES_DIR + 'mobilenet_v1_050/',
     architecture: mobileNetArchitectures[50]
   }
 };

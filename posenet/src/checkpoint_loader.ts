@@ -14,7 +14,7 @@
  * limitations under the License.
  * =============================================================================
  */
-
+import * as fs from 'fs';
 import {Tensor} from '@tensorflow/tfjs';
 
 /**
@@ -46,18 +46,15 @@ export class CheckpointLoader {
 
   private loadManifest(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', this.urlPath + MANIFEST_FILE);
-
-      xhr.onload = () => {
-        this.checkpointManifest = JSON.parse(xhr.responseText);
-        resolve();
-      };
-      xhr.onerror = (error) => {
-        throw new Error(
+      fs.readFile(this.urlPath + MANIFEST_FILE, (err, data) => {
+        if (err) {
+          throw new Error(
             `${MANIFEST_FILE} not found at ${this.urlPath}. ${error}`);
-      };
-      xhr.send();
+        } else {
+          this.checkpointManifest = JSON.parse(data);
+          resolve();
+        } 
+      });
     });
   }
 
@@ -108,26 +105,20 @@ export class CheckpointLoader {
     }
 
     const variableRequestPromiseMethod =
-        (resolve: (tensor: Tensor) => void, reject: () => void) => {
-          const xhr = new XMLHttpRequest();
-          xhr.responseType = 'arraybuffer';
-          const fname = this.checkpointManifest[varName].filename;
-          xhr.open('GET', this.urlPath + fname);
-
-          xhr.onload = () => {
-            if (xhr.status === 404) {
-              throw new Error(`Not found variable ${varName}`);
-            }
-            const values = new Float32Array(xhr.response);
-            const tensor =
-                Tensor.make(this.checkpointManifest[varName].shape, {values});
-            resolve(tensor);
-          };
-          xhr.onerror = (error) => {
+      (resolve: (tensor: Tensor) => void, reject: () => void) => {
+        const fname = this.checkpointManifest[varName].filename;
+        
+        fs.readFile(this.urlPath + fname, (err, data) => {
+          if (err) {
             throw new Error(`Could not fetch variable ${varName}: ${error}`);
-          };
-          xhr.send();
-        };
+          } else {
+            const values = new Float32Array(data);
+            const tensor =
+              Tensor.make(this.checkpointManifest[varName].shape, {values});
+            resolve(tensor);
+          } 
+        });        
+      };
 
     if (this.checkpointManifest == null) {
       return new Promise<Tensor>((resolve, reject) => {
