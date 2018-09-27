@@ -1,0 +1,3 @@
+[submodule "posenet"]
+	path = posenet
+	url = git@github.com:wndfly/tfjs-models-posenet.git
